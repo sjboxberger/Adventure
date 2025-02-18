@@ -14,14 +14,15 @@ namespace Adventure
 
             _player = new Player(10, 10, 20, 0, 1);
             _player.CurrentLocation = World.LocationByID(World.LOCATION_ID_HOME);
+            MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
             _player.Inventory.Add(new InventoryItem(World.ItemByID(World.ITEM_ID_RUSTY_SWORD), 1));
-            //MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
+            
 
             lblExperience.Text = _player.Exp.ToString();
             lblGold.Text = _player.Gold.ToString();
             lblHitPoints.Text = _player.CurrentHP.ToString();
-            //lblLevel.Text = _player.Level.ToString();
-            lblLevel.Text = _player.CurrentLocation.Name;
+            lblLevel.Text = _player.Level.ToString();
+            //lblLevel.Text = _player.CurrentLocation.Name;
         }
 
         private void btnNorth_Click(object sender, EventArgs e)

@@ -23,7 +23,7 @@ namespace Adventure_Engine
             Level = level;
             Inventory = new List<InventoryItem>();
             Quests = new List<PlayerQuest>();
-            CurrentLocation = World.LocationByID(World.LOCATION_ID_HOME);
+            //CurrentLocation = World.LocationByID(World.LOCATION_ID_HOME);
         }
         
         public bool HasRequiredItemsToEnterLocation(Location location)
