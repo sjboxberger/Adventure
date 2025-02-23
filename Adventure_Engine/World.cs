@@ -190,6 +190,7 @@ namespace Adventure_Engine
                 LOCATION_ID_BRIDGE,
                 "Bridge",
                 "A stone bridge crosses a wide river.");
+            bridge.ItemRequiredToEnter = ItemByID(ITEM_ID_ADVENTURER_PASS);
 
             Location spiderField = new Location(
                 LOCATION_ID_SPIDER_FIELD,
@@ -208,6 +209,8 @@ namespace Adventure_Engine
             alchemistHut.LocationNorth = alchemistGarden;
             alchemistHut.LocationSouth = townsquare;
 
+            alchemistGarden.LocationSouth = alchemistHut;
+
             farmhouse.LocationEast = townsquare;
             farmhouse.LocationWest = farmersField;
 
@@ -220,6 +223,17 @@ namespace Adventure_Engine
             bridge.LocationWest = guardPost;
 
             spiderField.LocationWest = bridge;
+
+            // Add locations to list
+            Locations.Add(home);
+            Locations.Add(townsquare);
+            Locations.Add(alchemistHut);
+            Locations.Add(alchemistGarden);
+            Locations.Add(farmhouse);
+            Locations.Add(farmersField);
+            Locations.Add(guardPost);
+            Locations.Add(bridge);
+            Locations.Add(spiderField);
         }
 
         public static Location LocationByID(int id)

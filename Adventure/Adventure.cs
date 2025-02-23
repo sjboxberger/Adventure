@@ -43,7 +43,76 @@ namespace Adventure
         }
         private void btnUseWeapon_Click(object sender, EventArgs e)
         {
+            // Get current weapon
+            Weapon currentWeapon = (Weapon)cboWeapons.SelectedItem;
 
+            // Generate random damage value to monster
+            int damageToMonster = RandomNumberGenerator.NumberBetween(currentWeapon.MinimumDamage, currentWeapon.MaximumDamage);
+            _currentMonster.CurrentHP -= damageToMonster;
+
+            rtbMessages.Text += "You hit the " + _currentMonster.Name + " for " + damageToMonster.ToString() + " points." + Environment.NewLine;
+            
+            //Check if monster is dead
+            if(_currentMonster.CurrentHP <= 0)
+            {
+                rtbMessages.Text += Environment.NewLine;
+                rtbMessages.Text += "You defeated the " + _currentMonster.Name + "!" + Environment.NewLine;
+
+                // Reward exp & gold
+                _player.Exp += _currentMonster.RewardExp;
+                _player.Gold += _currentMonster.RewardGold;
+                rtbMessages.Text += "Kiling the" + _currentMonster.Name + " awarded " +
+                    _currentMonster.RewardGold.ToString() + " gold and " + _currentMonster.RewardExp.ToString() + " experience points." + Environment.NewLine;
+
+                // Handle loot table / drop chance
+                List<InventoryItem> lootedItems = new List<InventoryItem>();
+                foreach(LootItem lootItem in _currentMonster.LootTable)
+                {
+                    if(RandomNumberGenerator.NumberBetween(1, 100) < lootItem.DropChance)
+                    {
+                        lootedItems.Add(new InventoryItem(lootItem.Details, 1));
+                        rtbMessages.Text += "You loot a " + lootItem.Details.Name + "." + Environment.NewLine;
+                    }
+                }
+                //Add loot to player inventory -- leaving out default loot
+                if(lootedItems.Count != 0)
+                {
+                    foreach(InventoryItem li in lootedItems)
+                    {
+                        _player.AddItemToInventory(li.Details, 1);
+                    }
+                }
+
+                lblHitPoints.Text = _player.CurrentHP.ToString();
+                lblGold.Text = _player.Gold.ToString();
+                lblExperience.Text = _player.Exp.ToString();
+                lblLevel.Text = _player.Level.ToString();
+
+                UpdateInventoryListUI();
+                UpdateWeaponListUI();
+                UpdatePotionListUI();
+
+                rtbMessages.Text += Environment.NewLine;
+
+                MoveTo(_player.CurrentLocation);
+            }
+            // Monster is still alive
+            else
+            {
+                int damageToPlayer = RandomNumberGenerator.NumberBetween(0, _currentMonster.MaxDamage);
+
+                rtbMessages.Text += "The " + _currentMonster.Name + " hit you for " + damageToPlayer.ToString() + " points of damage." + Environment.NewLine;
+
+                _player.CurrentHP -= damageToPlayer;
+
+                lblHitPoints.Text = _player.CurrentHP.ToString();
+
+                if(_player.CurrentHP <= 0)
+                {
+                    rtbMessages.Text += "The " + _currentMonster.Name + " killed you..." + Environment.NewLine;
+                    MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
+                }
+            }
         }
 
         private void btnUsePotion_Click(object sender, EventArgs e)
@@ -54,12 +123,19 @@ namespace Adventure
 
         private void MoveTo(Location newLocation)
         {
+            if (newLocation != _player.CurrentLocation)
+            {
+                rtbMessages.Clear();
+            }
+
             // Checking location item requirements
             if (!_player.HasRequiredItemsToEnterLocation(newLocation))
             {
                 rtbMessages.Text += "You need a " + newLocation.ItemRequiredToEnter.Name + " to enter." + Environment.NewLine;
                 return;
             }
+
+
 
             // If player has item, or no item is required, move to (update) new location.
             _player.CurrentLocation = newLocation;
